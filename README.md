@@ -23,6 +23,9 @@ The system is divided into independent microservices:
 - **Notification Service**: Sends alerts based on user-defined conditions (price changes, percentage thresholds).
 - **Asset Data Service**: Fetches live data from third-party APIs (stocks, cryptocurrencies).
 
+![Portfolio Tracker Design](https://github.com/user-attachments/assets/1b642cbc-6b6d-44a8-8f1e-dcd8e9986ce1)
+
+
 ### Service Communication:
 - **REST APIs** for synchronous calls between services.
 - **Azure Service Bus** to send and receive asynchronous messages between services.
