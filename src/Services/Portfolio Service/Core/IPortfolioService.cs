@@ -1,33 +1,23 @@
-﻿using System.Threading.Tasks;
-
-namespace Services.PortfolioService.Core;
-
-public interface IPortfolioService
+﻿public interface IPortfolioService
 {
     // Get the entire portfolio for a user
-    Task<UserPortfolio> GetPortfolioAsync(string userId);
+    Task<UserPortfolio> GetPortfolioAsync(Guid userId);
 
     // Add a new holding to the user's portfolio
-    Task<PortfolioHolding> AddHoldingAsync(string userId, CreateHoldingRequest request);
+    Task<PortfolioHolding> AddHoldingAsync(Guid userId, CreateHoldingRequest request);
 
-    // Update an existing holding in the portfolio
-    Task<PortfolioHolding> UpdateHoldingAsync(string userId, int holdingId, UpdateHoldingRequest request);
+    // Update the metadata (info) of an existing holding in the portfolio (does not change price/quantity)
+    Task<PortfolioHolding> UpdateHoldingInfoAsync(Guid userId, int holdingId, UpdateHoldingInfoRequest request);
 
     // Delete a holding from the portfolio
-    Task<bool> RemoveHoldingAsync(string userId, int holdingId);
+    Task<OperationResult> RemoveHoldingAsync(Guid userId, int holdingId);
 
-    // Add a transaction (buy/sell) to the portfolio
-    Task<Transaction> AddTransactionAsync(string userId, CreateTransactionRequest request);
+    // Perform a buy or sell transaction for a holding in the portfolio (affects quantity/price)
+    Task<Transaction> BuyOrSellTransactionAsync(Guid userId, CreateTransactionRequest request);
 
     // Get a summary of the user's portfolio (e.g., total value, number of holdings)
-    Task<PortfolioSummaryResponse> GetPortfolioSummaryAsync(string userId);
+    Task<PortfolioSummaryResponse> GetPortfolioSummaryAsync(Guid userId);
 
-    // Calculate the current value of the portfolio
-    Task<decimal> CalculateTotalPortfolioValueAsync(string userId);
-
-    // Get the current price of a specific holding (could be a stock, for example)
-    Task<decimal> GetHoldingCurrentPriceAsync(string symbol);
-
-    // Validate a transaction (check if the user has enough holdings to sell, etc.)
-    Task<ValidationResult> ValidateTransactionAsync(string userId, Transaction transaction);
+    // Calculate the total value of the portfolio, converting all holdings to the base currency
+    Task<decimal> CalculateTotalPortfolioValueAsync(Guid userId, string baseCurrency = "USD");
 }
