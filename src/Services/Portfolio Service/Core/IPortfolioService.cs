@@ -1,4 +1,8 @@
-﻿public interface IPortfolioService
+﻿using System.Threading.Tasks;
+
+namespace Services.PortfolioService.Core;
+
+public interface IPortfolioService
 {
     // Get the entire portfolio for a user
     Task<UserPortfolio> GetPortfolioAsync(string userId);
