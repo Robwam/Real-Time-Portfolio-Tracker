@@ -1,3 +1,5 @@
+using Shared.Models.Enums;
+
 namespace Shared.Models.DTOs;
 
 #region Portfolio DTOs
@@ -71,6 +73,26 @@ public class AssetPriceDto
     public decimal CurrentPrice { get; set; }
     public decimal Change { get; set; }
     public decimal ChangePercentage { get; set; }
+    public DateTime LastUpdated { get; set; }
+}
+
+public class AssetDetailDto
+{
+    public string Symbol { get; set; }
+    public string Name { get; set; }
+    public AssetType AssetType { get; set; }
+    public decimal CurrentPrice { get; set; }
+    public decimal Change { get; set; }
+    public decimal ChangePercentage { get; set; }
+    public decimal Volume { get; set; }
+    public decimal MarketCap { get; set; }
+    public decimal? DividendYield { get; set; }
+    public decimal? PERatio { get; set; }
+    public decimal? High52Week { get; set; }
+    public decimal? Low52Week { get; set; }
+    public string Description { get; set; }
+    public string Exchange { get; set; }
+    public string Currency { get; set; }
     public DateTime LastUpdated { get; set; }
 }
 
