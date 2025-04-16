@@ -1,11 +1,6 @@
-// Location: Portfolio/Data/Repositories/Interfaces/IPortfolioRepository.cs
-
 using Portfolio.Data.Entities;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace Portfolio.Data.Repositories.Interfaces
+namespace Portfolio.Data.Repository.Interfaces
 {
     public interface IPortfolioRepository
     {
