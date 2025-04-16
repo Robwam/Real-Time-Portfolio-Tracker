@@ -13,9 +13,9 @@ namespace Portfolio.Data.Repositories.Interfaces
         
         Task<Holding> GetHoldingAsync(Guid userId, Guid holdingId);
         
-        Task<Holding> AddHoldingAsync(Holding holding);
+        Task<Holding> AddHoldingAsync(Guid userId, Holding holding);
         
-        Task<bool> UpdateHoldingAsync(Holding holding);
+        Task<bool> UpdateHoldingAsync(Guid userId, Holding holding);
         
         Task<bool> DeleteHoldingAsync(Guid userId, Guid holdingId);
     }
