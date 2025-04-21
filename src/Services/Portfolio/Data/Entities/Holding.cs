@@ -1,9 +1,11 @@
+using System.ComponentModel.DataAnnotations;
 using Shared.Models.Enums;
 
 namespace Portfolio.Data.Entities;
 
 public class Holding
 {
+    [Key]
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
     public string Symbol { get; set; }
