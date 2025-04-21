@@ -5,7 +5,7 @@ namespace Portfolio.Converters;
 
 public static class DtoConverter
 {
-    public static HoldingDto ToHoldingDto(Holding holding)
+    public static HoldingDto ToHoldingDto(Models.Holding holding)
     {
         return new HoldingDto
         {
@@ -13,6 +13,7 @@ public static class DtoConverter
             Symbol = holding.Symbol,
             AssetType = holding.AssetType,
             Quantity = holding.Quantity,
+            CurrentPrice = holding.CurrentPrice,
             AveragePurchasePrice = holding.AveragePurchasePrice,
             LastUpdated = holding.LastUpdated
         };

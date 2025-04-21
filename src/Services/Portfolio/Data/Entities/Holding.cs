@@ -11,5 +11,4 @@ public class Holding
     public decimal Quantity { get; set; }
     public decimal? AveragePurchasePrice { get; set; }
     public DateTime LastUpdated { get; set; }
-    public DateTime CreatedAt { get; set; }
 }

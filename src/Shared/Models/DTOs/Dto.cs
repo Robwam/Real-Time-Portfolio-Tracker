@@ -16,6 +16,7 @@ public class HoldingDto
     public required string Symbol { get; set; }
     public AssetType AssetType { get; set; }
     public decimal Quantity { get; set; }
+    public decimal? CurrentPrice { get; set; }
     public decimal? AveragePurchasePrice { get; set; }
     public DateTime LastUpdated { get; set; }
 }
@@ -49,4 +50,21 @@ public class AssetDetailDto
     public string Description { get; set; }
     public string Exchange { get; set; }
     public DateTime LastUpdated { get; set; }
+}
+
+public class UpdateHoldingRequestDto
+{
+    public Guid UserId { get; init; }
+    public Guid HoldingId { get; init; }
+    public decimal Quantity { get; init; }
+    public decimal? PurchasePrice { get; init; }
+}
+
+public class AddHoldingRequestDto
+{
+    public Guid UserId { get; init; }
+    public string Symbol { get; init; }
+    public decimal Quantity { get; init; }
+    public AssetType AssetType { get; init; }
+    public decimal? PurchasePrice { get; init; }
 }
