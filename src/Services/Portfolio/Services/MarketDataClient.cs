@@ -13,14 +13,14 @@ public class MarketDataClient : IMarketDataClient
 
     public async Task<AssetPriceDto> GetAssetPriceAsync(string symbol, AssetType assetType)
     {
-        return new AssetPriceDto{Name = "AAPL", AssetType = AssetType.Stock, CurrentPrice = 150.00m};
+        return new AssetPriceDto{Symbol = "AAPL", AssetType = AssetType.Stock, CurrentPrice = 150.00m};
     }
 
     public async Task<IEnumerable<AssetPriceDto>> GetAssetPricesAsync(IEnumerable<string> symbols, AssetType? assetType = null)
     {
         var assets = new List<AssetPriceDto>();
-        assets.Add(new AssetPriceDto{Name = "AAPL", AssetType = AssetType.Stock, CurrentPrice = 150.00m});
-        assets.Add(new AssetPriceDto{Name = "GOOGL", AssetType = AssetType.Stock, CurrentPrice = 2800.00m});
+        assets.Add(new AssetPriceDto{Symbol = "AAPL", AssetType = AssetType.Stock, CurrentPrice = 150.00m});
+        assets.Add(new AssetPriceDto{Symbol = "GOOGL", AssetType = AssetType.Stock, CurrentPrice = 2800.00m});
 
         return assets;
     }
