@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Shared.Models.DTOs;
 using Shared.Models.Enums;
+using MarketData.Models;
 
 namespace MarketData.Application.Interfaces
 {
@@ -21,7 +21,7 @@ namespace MarketData.Application.Interfaces
         /// <param name="forceRefresh">If true, bypasses the cache and fetches fresh data.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Asset price information.</returns>
-        Task<AssetPriceDto> GetAssetPriceAsync(
+        Task<AssetPrice> GetAssetPriceAsync(
             string symbol, 
             AssetType assetType, 
             bool forceRefresh = false, 
@@ -35,7 +35,7 @@ namespace MarketData.Application.Interfaces
         /// <param name="forceRefresh">If true, bypasses the cache and fetches fresh data.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Collection of asset price information.</returns>
-        Task<IEnumerable<AssetPriceDto>> GetAssetPricesAsync(
+        Task<IEnumerable<AssetPrice>> GetAssetPricesAsync(
             IEnumerable<string> symbols, 
             AssetType? assetType = null, 
             bool forceRefresh = false, 
@@ -49,7 +49,7 @@ namespace MarketData.Application.Interfaces
         /// <param name="forceRefresh">If true, bypasses the cache and fetches fresh data.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Detailed asset information.</returns>
-        Task<AssetDetailDto> GetAssetDetailAsync(
+        Task<AssetDetail> GetAssetDetailAsync(
             string symbol, 
             AssetType assetType, 
             bool forceRefresh = false, 
