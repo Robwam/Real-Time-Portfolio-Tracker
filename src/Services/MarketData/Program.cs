@@ -1,41 +1,56 @@
-using MarketData.Application.Configuration;
-using MarketData.Application.Services;
-using MarketData.Infrastructure.Cache;
-using MarketData.Application.Interfaces;
-using Shared.Interfaces;
+using System;
+using System.Text.Json.Serialization;
+using MarketData.Infrastructure;
+using MarketData.Infrastructure.DependencyInjection;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<MarketDataSettings>(
-    builder.Configuration.GetSection("MarketData"));
+// Add services to the container
+builder.Services.AddControllers()
+    .AddJsonOptions(options => 
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    });
 
-// Register services
-builder.Services.AddSingleton<ICacheService, RedisCacheService>();
-builder.Services.AddSingleton<IExternalMarketDataClientFactory, ExternalMarketDataClientFactory>();
-builder.Services.AddSingleton<CacheKeyGenerator>();
-builder.Services.AddScoped<IMarketDataService, MarketDataService>();
-//builder.Services.AddScoped<IMarketDataClient, MarketDataClient>();
+// Add Swagger/OpenAPI
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// Register Redis connection
-builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+// Add logging
+builder.Services.AddLogging(configure => 
 {
-    var config = builder.Configuration.GetConnectionString("Redis");
-    return ConnectionMultiplexer.Connect(config);
+    configure.AddConsole();
+    configure.AddDebug();
 });
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// Add HTTP client factory
+builder.Services.AddHttpClient();
 
+// Add market data services
+builder.Services.AddMarketDataServices(builder.Configuration);
+
+// Build the app
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/error");
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseAuthorization();
+app.MapControllers();
 
-
+// Run the app
 app.Run();
