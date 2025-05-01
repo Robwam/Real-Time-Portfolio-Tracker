@@ -35,39 +35,21 @@ public class ExternalClientFactory : IExternalClientFactory
     
     private IExternalClient CreateClient(AssetType assetType)
     {
-        try
-        {
-            var providerName = GetProviderName(assetType);
-            return providerName.ToLowerInvariant() switch
-            {
-                "alphavantage" => CreateAlphaVantageClient(assetType),
-                //"coingecko" => CreateCoinGeckoClient(assetType),
-                _ => throw new NotSupportedException($"Provider {providerName} is not supported")
-            };
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error creating client for asset type {AssetType}, trying fallback", assetType);
-            throw new InvalidOperationException($"Failed to create client for asset type {assetType}", ex);
-        }
-    }
-    
-    private string GetProviderName(AssetType assetType)
-    {
         return assetType switch
         {
-            AssetType.Stock => _settings.StockProvider,
-            AssetType.Crypto => _settings.CryptoProvider,
+            AssetType.Stock => CreateAlphaVantageClient(assetType),
+            //AssetType.Crypto => CreateCoinGeckoClient(assetType),
             _ => throw new ArgumentOutOfRangeException(nameof(assetType))
         };
     }
     
     private AlphaVantageClient CreateAlphaVantageClient(AssetType assetType)
     {
-        var httpClient = _httpClientFactory.CreateClient("AlphaVantage");
-        httpClient.BaseAddress = new Uri("https://www.alphavantage.co/");
+        var httpClient = _httpClientFactory.CreateClient();
+        httpClient.BaseAddress = new Uri(_settings.Providers["AlphaVantage"].BaseUrl);
+        httpClient.Timeout = TimeSpan.FromSeconds(_settings.Providers["AlphaVantage"].TimeoutSeconds);
         
-        return new AlphaVantageClient(httpClient, _settings.AlphaVantageApiKey, assetType, _logger);
+        return new AlphaVantageClient(httpClient, _settings.Providers["AlphaVantage"].ApiKey, assetType, _logger);
     }
     
     // private CoinGeckoClient CreateCoinGeckoClient(AssetType assetType)

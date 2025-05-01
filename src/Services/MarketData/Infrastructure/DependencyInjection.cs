@@ -17,14 +17,13 @@ public static class DependencyInjection
         configuration.GetSection("MarketData:Cache").Bind(cacheSettings);
         services.AddSingleton(cacheSettings);
         
-        var externalSettings = new ExternalClientSettings();
-        configuration.GetSection("MarketData:External").Bind(externalSettings);
-        services.AddSingleton(externalSettings);
-        
+        var externalClientSettings = new ExternalClientSettings();
+        configuration.GetSection("MarketData:ExternalClients").Bind(externalClientSettings);
+        services.AddSingleton(externalClientSettings);
+
         // Register Redis connection
-        var redisConnectionString = configuration.GetConnectionString("Redis");
-        services.AddSingleton<IConnectionMultiplexer>(sp => 
-            ConnectionMultiplexer.Connect(redisConnectionString ?? "localhost:6379"));
+        var redisConnectionString = configuration["Redis:ConnectionString"];
+        services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(redisConnectionString));
         
         // Register HTTP clients
         services.AddHttpClient();
