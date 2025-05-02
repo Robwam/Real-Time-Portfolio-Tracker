@@ -1,27 +1,33 @@
 using Shared.Interfaces;
 using Shared.Models.DTOs;
 using Shared.Models.Enums;
+using MarketData.Services;
 
 namespace Portfolio.Services;
 
 public class MarketDataClient : IMarketDataClient
 {
+    private readonly HttpClient _httpClient;
+
+    public MarketDataClient(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
+
     public async Task<AssetDetailDto> GetAssetDetailAsync(string symbol, AssetType assetType)
     {
-        return new AssetDetailDto{Symbol = "AAPL", Name = "Apple"};
+        throw new NotImplementedException("Not yet implemented");
     }
 
     public async Task<AssetPriceDto> GetAssetPriceAsync(string symbol, AssetType assetType)
     {
-        return new AssetPriceDto{Symbol = "AAPL", AssetType = AssetType.Stock, CurrentPrice = 150.00m};
+        var response = await _httpClient.GetAsync($"api/price/{symbol}?assetType={assetType}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<AssetPriceDto>();
     }
 
     public async Task<IEnumerable<AssetPriceDto>> GetAssetPricesAsync(IEnumerable<string> symbols, AssetType? assetType = null)
     {
-        var assets = new List<AssetPriceDto>();
-        assets.Add(new AssetPriceDto{Symbol = "AAPL", AssetType = AssetType.Stock, CurrentPrice = 150.00m});
-        assets.Add(new AssetPriceDto{Symbol = "GOOGL", AssetType = AssetType.Stock, CurrentPrice = 2800.00m});
-
-        return assets;
+        throw new NotImplementedException("Not yet implemented");
     }
 }

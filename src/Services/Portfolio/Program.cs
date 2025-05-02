@@ -14,13 +14,18 @@ builder.Services.AddControllers().AddApplicationPart(typeof(Program).Assembly);
 
 // Configure DbContext
 builder.Services.AddDbContext<PostgresContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
 
 // Register services
 builder.Services.AddScoped<IPortfolioRepository, PortfolioRepository>();
 builder.Services.AddScoped<IPortfolioService, PortfolioService>();
 builder.Services.AddScoped<IPortfolioFactory, PortfolioFactory>();
 builder.Services.AddScoped<IMarketDataClient, MarketDataClient>();
+
+builder.Services.AddHttpClient<MarketDataClient>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration.GetConnectionString("MarketDataService"));
+});
 
 // Add Swagger services
 builder.Services.AddEndpointsApiExplorer();
