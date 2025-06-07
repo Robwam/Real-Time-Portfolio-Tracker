@@ -6,7 +6,7 @@ using Portfolio.Converters;
 namespace Portfolio.API.Controllers;
 
 [ApiController]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/[controller]")]
 public class PortfolioController : ControllerBase
 {
     private readonly IPortfolioService _portfolioService;
