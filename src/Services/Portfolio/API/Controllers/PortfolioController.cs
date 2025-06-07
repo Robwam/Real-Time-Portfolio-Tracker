@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Services.Interfaces;
 using Shared.Models.DTOs;
@@ -6,7 +5,7 @@ using Shared.Models.DTOs;
 namespace Portfolio.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class PortfolioController : ControllerBase
 {
     private readonly IPortfolioService _portfolioService;
@@ -25,11 +24,8 @@ public class PortfolioController : ControllerBase
     public async Task<ActionResult<PortfolioDto>> GetPortfolio(Guid userId)
     {
         var portfolio = await _portfolioService.GetPortfolioAsync(userId);
-        
-        if (portfolio == null)
-            return NotFound();
-            
-        return Ok(portfolio);
+
+        return portfolio is null ? NotFound() : Ok(portfolio);
     }
 
     /// <summary>
@@ -37,9 +33,14 @@ public class PortfolioController : ControllerBase
     /// </summary>
     [HttpGet("{userId:guid}/holdings")]
     [ProducesResponseType(typeof(IEnumerable<HoldingDto>), 200)]
+    [ProducesResponseType(204)]
     public async Task<ActionResult<IEnumerable<HoldingDto>>> GetHoldings(Guid userId)
     {
         var holdings = await _portfolioService.GetHoldingsAsync(userId);
+
+        if (holdings == null || !holdings.Any())
+            return NoContent();
+
         return Ok(holdings);
     }
 
@@ -52,11 +53,8 @@ public class PortfolioController : ControllerBase
     public async Task<ActionResult<HoldingDto>> GetHolding(Guid holdingId)
     {
         var holding = await _portfolioService.GetHoldingAsync(holdingId);
-        
-        if (holding == null)
-            return NotFound();
-            
-        return Ok(holding);
+
+        return holding is null ? NotFound() : Ok(holding);
     }
 
     /// <summary>
@@ -69,7 +67,7 @@ public class PortfolioController : ControllerBase
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-            
+
         try
         {
             var holding = await _portfolioService.AddHoldingAsync(request);
@@ -96,16 +94,15 @@ public class PortfolioController : ControllerBase
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-            
+
         if (holdingId != request.HoldingId)
-            return BadRequest("Holding ID in route must match ID in request body");
-            
+        {
+            return BadRequest($"Route ID must match {nameof(UpdateHoldingRequestDto.HoldingId)} in the request body.");
+        }
+
         var updatedHolding = await _portfolioService.UpdateHoldingAsync(request);
-        
-        if (updatedHolding == null)
-            return NotFound();
-            
-        return Ok(updatedHolding);
+
+        return updatedHolding is null ? NotFound() : Ok(updatedHolding);
     }
 
     /// <summary>
@@ -117,10 +114,7 @@ public class PortfolioController : ControllerBase
     public async Task<IActionResult> DeleteHolding(Guid holdingId)
     {
         var result = await _portfolioService.DeleteHoldingAsync(holdingId);
-        
-        if (!result)
-            return NotFound();
-            
-        return NoContent();
+
+        return !result ? NotFound() : NoContent();
     }
 }
