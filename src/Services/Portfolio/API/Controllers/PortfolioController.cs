@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Services.Interfaces;
 using Shared.Models.DTOs;
+using Portfolio.Converters;
 
 namespace Portfolio.API.Controllers;
 
@@ -24,8 +25,11 @@ public class PortfolioController : ControllerBase
     public async Task<ActionResult<PortfolioDto>> GetPortfolio(Guid userId)
     {
         var portfolio = await _portfolioService.GetPortfolioAsync(userId);
+        if (portfolio is null)
+            return NotFound();
 
-        return portfolio is null ? NotFound() : Ok(portfolio);
+        var portfolioDto = DtoConverter.ToPortfolioDto(portfolio);
+        return Ok(portfolioDto);
     }
 
     /// <summary>
@@ -41,7 +45,8 @@ public class PortfolioController : ControllerBase
         if (holdings == null || !holdings.Any())
             return NoContent();
 
-        return Ok(holdings);
+        var holdingsDto = holdings.Select(DtoConverter.ToHoldingDto);
+        return Ok(holdingsDto);
     }
 
     /// <summary>
@@ -54,7 +59,11 @@ public class PortfolioController : ControllerBase
     {
         var holding = await _portfolioService.GetHoldingAsync(holdingId);
 
-        return holding is null ? NotFound() : Ok(holding);
+        if (holding is null)
+            return NotFound();
+
+        var holdingDto = DtoConverter.ToHoldingDto(holding);
+        return Ok(holdingDto);
     }
 
     /// <summary>
@@ -71,7 +80,8 @@ public class PortfolioController : ControllerBase
         try
         {
             var holding = await _portfolioService.AddHoldingAsync(request);
-            return CreatedAtAction(nameof(GetHolding), new { holdingId = holding.Id }, holding);
+            var holdingDto = DtoConverter.ToHoldingDto(holding);
+            return CreatedAtAction(nameof(GetHolding), new { holdingId = holdingDto.Id }, holdingDto);
         }
         catch (ArgumentException ex)
         {
@@ -102,7 +112,11 @@ public class PortfolioController : ControllerBase
 
         var updatedHolding = await _portfolioService.UpdateHoldingAsync(request);
 
-        return updatedHolding is null ? NotFound() : Ok(updatedHolding);
+        if (updatedHolding is null)
+            return NotFound();
+
+        var updatedHoldingDto = DtoConverter.ToHoldingDto(updatedHolding);
+        return Ok(updatedHoldingDto);
     }
 
     /// <summary>
@@ -114,7 +128,6 @@ public class PortfolioController : ControllerBase
     public async Task<IActionResult> DeleteHolding(Guid holdingId)
     {
         var result = await _portfolioService.DeleteHoldingAsync(holdingId);
-
         return !result ? NotFound() : NoContent();
     }
 }

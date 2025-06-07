@@ -27,7 +27,7 @@ public class PortfolioService : IPortfolioService
         _marketDataClient = marketDataClient ?? throw new ArgumentNullException(nameof(marketDataClient));
     }
 
-    public async Task<HoldingDto> AddHoldingAsync(AddHoldingRequestDto request)
+    public async Task<Models.Holding> AddHoldingAsync(AddHoldingRequestDto request)
     {
         var price = await _marketDataClient.GetAssetPriceAsync(request.Symbol, request.AssetType);
         
@@ -44,7 +44,7 @@ public class PortfolioService : IPortfolioService
         {
             existingHolding = await ApplyDollarCostAveraging(existingHolding, request.Quantity, request.PurchasePrice);
             var model = EntityToDomainConverter.ToHoldingModel(existingHolding, price);
-            return DtoConverter.ToHoldingDto(model);
+            return model;
         }
         
         var newHolding = new Data.Entities.Holding
@@ -63,7 +63,7 @@ public class PortfolioService : IPortfolioService
             throw new InvalidOperationException("Failed to add holding to database");
         
         var holdingModel = EntityToDomainConverter.ToHoldingModel(addedHolding, price);
-        return DtoConverter.ToHoldingDto(holdingModel);
+        return holdingModel;
     }
 
     public async Task<bool> DeleteHoldingAsync(Guid holdingId)
@@ -71,7 +71,7 @@ public class PortfolioService : IPortfolioService
         return await _portfolioRepository.DeleteHoldingAsync(holdingId);
     }
 
-    public async Task<HoldingDto?> GetHoldingAsync(Guid holdingId)
+    public async Task<Models.Holding> GetHoldingAsync(Guid holdingId)
     {
         var entity = await _portfolioRepository.GetHoldingAsync(holdingId);
         if (entity == null) return null;
@@ -79,13 +79,13 @@ public class PortfolioService : IPortfolioService
         var price = await _marketDataClient.GetAssetPriceAsync(entity.Symbol, entity.AssetType);
         var enrichedHolding = EntityToDomainConverter.ToHoldingModel(entity, price);
         
-        return DtoConverter.ToHoldingDto(enrichedHolding);
+        return enrichedHolding;
     }
 
-    public async Task<IEnumerable<HoldingDto>> GetHoldingsAsync(Guid userId)
+    public async Task<IEnumerable<Models.Holding>> GetHoldingsAsync(Guid userId)
     {
         var holdings = await _portfolioRepository.GetHoldingsAsync(userId);
-        if (!holdings.Any()) return Enumerable.Empty<HoldingDto>();
+        if (!holdings.Any()) return Enumerable.Empty<Models.Holding>();
         
         var symbols = holdings.Select(h => h.Symbol).Distinct().ToList();
         var prices = await _marketDataClient.GetAssetPricesAsync(symbols);
@@ -94,11 +94,11 @@ public class PortfolioService : IPortfolioService
         return holdings.Select(h => {
             priceMap.TryGetValue(h.Symbol, out var price);
             var model = EntityToDomainConverter.ToHoldingModel(h, price);
-            return DtoConverter.ToHoldingDto(model);
+            return model;
         });
     }
 
-    public async Task<PortfolioDto> GetPortfolioAsync(Guid userId)
+    public async Task<PortfolioModel> GetPortfolioAsync(Guid userId)
     {
         var holdings = await _portfolioRepository.GetHoldingsAsync(userId);
         PortfolioModel portfolio;
@@ -115,10 +115,10 @@ public class PortfolioService : IPortfolioService
             portfolio = _portfolioFactory.CreatePortfolio(userId, holdings, marketData);
         }
         
-        return DtoConverter.ToPortfolioDto(portfolio);
+        return portfolio;
     }
 
-    public async Task<HoldingDto> UpdateHoldingAsync(UpdateHoldingRequestDto request)
+    public async Task<Models.Holding> UpdateHoldingAsync(UpdateHoldingRequestDto request)
     {
         var entity = await _portfolioRepository.GetHoldingAsync(request.HoldingId);
         if (entity == null) return null;
@@ -131,7 +131,7 @@ public class PortfolioService : IPortfolioService
         await _portfolioRepository.UpdateHoldingAsync(entity);
         
         var model = EntityToDomainConverter.ToHoldingModel(entity);
-        return DtoConverter.ToHoldingDto(model);
+        return model;
     }
 
     private async Task<Data.Entities.Holding> ApplyDollarCostAveraging(

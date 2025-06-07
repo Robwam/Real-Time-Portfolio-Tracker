@@ -1,17 +1,19 @@
+using Portfolio.Models;
 using Shared.Models.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using PortfolioModel = Portfolio.Models.Portfolio;
 
 namespace Portfolio.Services.Interfaces
 {
     public interface IPortfolioService
     {
-        Task<PortfolioDto> GetPortfolioAsync(Guid userId);
-        Task<IEnumerable<HoldingDto>> GetHoldingsAsync(Guid userId);
-        Task<HoldingDto> GetHoldingAsync(Guid holdingId);
-        Task<HoldingDto> AddHoldingAsync(AddHoldingRequestDto request);
-        Task<HoldingDto> UpdateHoldingAsync(UpdateHoldingRequestDto request);
+        Task<PortfolioModel> GetPortfolioAsync(Guid userId);
+        Task<IEnumerable<Holding>> GetHoldingsAsync(Guid userId);
+        Task<Holding> GetHoldingAsync(Guid holdingId);
+        Task<Holding> AddHoldingAsync(AddHoldingRequestDto request);
+        Task<Holding> UpdateHoldingAsync(UpdateHoldingRequestDto request);
         Task<bool> DeleteHoldingAsync(Guid holdingId);
     }
 }
